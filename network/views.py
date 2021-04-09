@@ -6,7 +6,7 @@ from django.urls import reverse
 from django import forms
 
 
-from .models import User,Post
+from .models import User,Post, UserProfile
 
 class NewPostForm(forms.Form):
 
@@ -66,7 +66,10 @@ def register(request):
         # Attempt to create new user
         try:
             user = User.objects.create_user(username, email, password)
+            userp = UserProfile()
+            userp.user = user
             user.save()
+            userp.save()
         except IntegrityError:
             return render(request, "network/register.html", {
                 "message": "Username already taken."
@@ -97,3 +100,24 @@ def new_post(request):
     # return render(request,"auctions/error.html",{
     #     "message": "Some problem happened while you submited your Comment"
     # })
+
+def profile(request,username):
+
+    #User of the profile that is visited
+    user = User.objects.get(username = username)
+
+    #Posts of that user
+    user_posts = Post.objects.filter(user = user)
+
+    #Reverse Chronological Order
+    user_posts = user_posts.order_by('-created_at')
+
+    #get profile of the user
+    profile_user = UserProfile.objects.get(user = user)
+
+    following = profile_user.following
+
+
+    return render(request, "network/profile.html",{
+        "posts":user_posts,"username":username,"following":following.count()
+    })
