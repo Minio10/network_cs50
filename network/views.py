@@ -21,7 +21,14 @@ def index(request):
     all_posts = Post.objects.all() #- means that its desceding order newer to older
     all_posts = all_posts.order_by('-created_at')
     return render(request, "network/index.html",{
-        "posts":all_posts,"form":NewPostForm()
+        "posts":all_posts
+    })
+
+
+def newPost(request):
+
+    return render(request,"network/newPost.html",{
+        "form":NewPostForm()
     })
 
 
@@ -177,3 +184,31 @@ def handleFollow(request,username,flag):
 
     #Redirects back to the profile view
     return redirect("profile",username)
+
+#ONly shows posts of the people that the user follows
+def following(request):
+
+    posts = Post.objects.none()
+
+    # Following
+    user_logged_in = User.objects.get(username = request.user.username)
+    user_p_logged_in = UserProfile.objects.get(user = user_logged_in)
+
+    following_list = user_p_logged_in.following.all()
+
+    #Get all posts
+    all_posts = Post.objects.all() #- means that its desceding order newer to older
+    all_posts = all_posts.order_by('-created_at')
+
+    following_posts = all_posts
+
+    #Takes out the posts that belong to users that are not in the following list
+    for post in all_posts.all():
+
+        if(post.user not in following_list):
+            following_posts = following_posts.all().exclude(user = post.user)
+
+
+    return render(request, "network/following.html",{
+        "posts":following_posts
+    })
