@@ -7,10 +7,6 @@
     <h1>All Posts</h1>
 
 
-    
-
-    <br><br><br>
-
     {% for post in posts%}
 
       <div class="container"
@@ -25,8 +21,18 @@
       </div>
 
 
-
     {% endfor %}
+
+
+    <div class="bottom">
+      {% if posts.has_previous %}
+        <a href="{% url 'index' %}?page={{ posts.previous_page_number }}">Previous</a>
+      {% endif %}
+
+      {% if posts.has_next %}
+        <a href="{% url 'index' %}?page={{ posts.next_page_number }}">Next</a>
+      {% endif %}
+    </div>
 
 
 {% endblock %}

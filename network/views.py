@@ -4,6 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render,redirect
 from django.urls import reverse
 from django import forms
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 from .models import User,Post, UserProfile
@@ -20,11 +22,25 @@ class NewPostForm(forms.Form):
 def index(request):
     all_posts = Post.objects.all() #- means that its desceding order newer to older
     all_posts = all_posts.order_by('-created_at')
+
+    page = request.GET.get('page', 1)
+
+    #Only shows 10 posts per Page
+    paginator = Paginator(all_posts, 10)
+
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+
+
     return render(request, "network/index.html",{
-        "posts":all_posts
+        "posts":posts
     })
 
-
+@login_required(login_url='index') #redirect when user is not logged in
 def newPost(request):
 
     return render(request,"network/newPost.html",{
@@ -186,6 +202,7 @@ def handleFollow(request,username,flag):
     return redirect("profile",username)
 
 #ONly shows posts of the people that the user follows
+@login_required(login_url='index') #redirect when user is not logged in
 def following(request):
 
     posts = Post.objects.none()
