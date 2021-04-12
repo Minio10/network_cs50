@@ -1,3 +1,4 @@
+import json
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -6,6 +7,9 @@ from django.urls import reverse
 from django import forms
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+
 
 
 from .models import User,Post, UserProfile
@@ -172,8 +176,22 @@ def profile(request,username):
         else:
             flag = 0
 
+    #Paginates the posts
+
+    page = request.GET.get('page', 1)
+
+    #Only shows 10 posts per Page
+    paginator = Paginator(user_posts, 10)
+
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+
     return render(request, "network/profile.html",{
-        "posts":user_posts,"username":username,"following":following.count(),"followers":followers,"flag":flag
+        "posts":posts,"username":username,"following":following.count(),"followers":followers,"flag":flag
     })
 
 
@@ -205,7 +223,6 @@ def handleFollow(request,username,flag):
 @login_required(login_url='index') #redirect when user is not logged in
 def following(request):
 
-    posts = Post.objects.none()
 
     # Following
     user_logged_in = User.objects.get(username = request.user.username)
@@ -226,6 +243,40 @@ def following(request):
             following_posts = following_posts.all().exclude(user = post.user)
 
 
+    #Paginates the posts
+
+    page = request.GET.get('page', 1)
+
+    #Only shows 10 posts per Page
+    paginator = Paginator(following_posts, 10)
+
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+
+
     return render(request, "network/following.html",{
-        "posts":following_posts
+        "posts":posts
     })
+
+
+@csrf_exempt
+def edit_posts(request,id):
+
+
+    # Query for requested post
+    try:
+        post = Post.objects.get(pk=id)
+    except Email.DoesNotExist:
+        return JsonResponse({"error": "Email not found."}, status=404)
+
+    if request.method == "PUT":
+        # Update whether email is read or should be archived
+        data = json.loads(request.body)
+        body = data.get("body", "")
+        post.text = body
+        post.save()
+        return HttpResponse(status=204)

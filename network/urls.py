@@ -12,5 +12,10 @@ urlpatterns = [
     path("profile/<str:username>",views.profile,name = "profile"),
     path("handleFollow/<str:username>/<int:flag>",views.handleFollow, name = "handleFollow"),
     path("following",views.following,name ="following"),
-    path("newPost",views.newPost,name = "newPost")
+    path("newPost",views.newPost,name = "newPost"),
+
+    # API Routes
+    path("edit_posts/<int:id>", views.edit_posts, name="edit_posts")
+
+
 ]

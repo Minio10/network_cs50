@@ -5,11 +5,11 @@
 {% block body %}
 
 
-<h4> All Posts </h4>
+<h4> Following Posts </h4>
 {% for post in posts%}
 
   <div class="container"
-        <p ><strong>{{post.user.username}}</strong> </p>
+        <p><a href="{% url 'profile' post.user.username %}"><strong>{{ post.user.username }}</strong></a></p>
         <p >{{post.text}}</p>
         <p> <small>{{post.created_at}}</small></p>
         <img src="{% static 'network/small-heart-icon-0.jpg' %}" width="100" height="60">
@@ -19,5 +19,15 @@
   </div>
 
 {% endfor %}
+
+<div class="bottom">
+  {% if posts.has_previous %}
+    <a href="{% url 'following' %}?page={{ posts.previous_page_number }}">Previous</a>
+  {% endif %}
+
+  {% if posts.has_next %}
+    <a href="{% url 'following' %}?page={{ posts.next_page_number }}">Next</a>
+  {% endif %}
+</div>
 
 {% endblock %}
