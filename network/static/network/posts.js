@@ -1,7 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
 
   // Use buttons to toggle between views
-  document.querySelector('#edit').addEventListener('click', edit_post);
+  var buttons = document.querySelectorAll(".edit");
+
+
+
+  for (let i = 0, len = buttons.length; i < len; i++) {
+    let temp = buttons[i].value;
+    buttons[i].addEventListener("click", function(){
+      edit_post(temp);
+    });
+
+  }
 
   load_posts();
 
@@ -9,9 +19,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-function edit_post() {
+function edit_post(id) {
 
   event.preventDefault();
+
+  console.log(id);
+
 
 
   // Show compose view and hide other views
@@ -24,15 +37,13 @@ function edit_post() {
   document.querySelector('#compose-body').value = '';
 
   // Form that sends the email info
-  document.querySelector('#compose-form').addEventListener('submit', send_edit_post);
+  document.querySelector('#compose-form').addEventListener('submit', () => send_edit_post(id));
 
 }
 
 
-function send_edit_post(){
+function send_edit_post(id){
 
-
-  var id = document.querySelector('#calmo').value; //value of the text input
 
 
   fetch(`/edit_posts/${id}`,{

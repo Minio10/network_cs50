@@ -23,8 +23,9 @@
               <div class="image">
                 {{post.likes}}
               </div>
-              <input type='hidden' value='{{post.id}}' id='calmo' />
-              <button class="btn btn-sm btn-outline-primary" id="edit" >Edit Post</button>
+              {% if user.get_username == post.user.username %}
+                <button class="edit" value = '{{post.id}}' >Edit Post</button>
+              {% endif %}
 
         </div>
 

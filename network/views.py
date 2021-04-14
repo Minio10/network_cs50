@@ -266,12 +266,16 @@ def following(request):
 @csrf_exempt
 def edit_posts(request,id):
 
-
     # Query for requested post
     try:
         post = Post.objects.get(pk=id)
-    except Email.DoesNotExist:
-        return JsonResponse({"error": "Email not found."}, status=404)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
+
+    #Prevents other users from editing someone else posts
+    if(post.user != request.user):
+        return JsonResponse({"error": "You are not authorized to edit other people posts."}, status=404)
+
 
     if request.method == "PUT":
         # Update whether email is read or should be archived
