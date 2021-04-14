@@ -24,7 +24,7 @@
                 {{post.likes}}
               </div>
               {% if user.get_username == post.user.username %}
-                <button class="edit" value = '{{post.id}}' >Edit Post</button>
+                <button class="edit" value = '{{post.id}}'> <img src="{% static 'network/edit.png' %}" width="30" height="30" >Edit Post</button>
               {% endif %}
 
         </div>
