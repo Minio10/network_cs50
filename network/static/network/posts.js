@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Use buttons to toggle between views
   var buttons = document.querySelectorAll(".edit");
+  var dislikes = document.querySelectorAll(".dislike");
+  var likes = document.querySelectorAll(".like");
 
 
 
@@ -13,10 +15,87 @@ document.addEventListener('DOMContentLoaded', function() {
 
   }
 
+  for (let i = 0, len = dislikes.length; i < len; i++) {
+    let temp = dislikes[i].value;
+    dislikes[i].addEventListener("click", function(){
+      manage_likes(temp,1);
+    });
+
+  }
+
+  for (let i = 0, len = likes.length; i < len; i++) {
+    let temp = likes[i].value;
+    likes[i].addEventListener("click", function(){
+      manage_likes(temp,0);
+    });
+
+  }
+
+
+
   load_posts();
 
 
 });
+
+
+function manage_likes(id,flag){
+
+  event.preventDefault();
+
+  var new_num_likes = document.querySelector(`#likes${id}`);
+  //Unarchive
+  if(flag == 1){
+    fetch(`/manage_likes/${id}`,{
+      method: 'PUT',
+      body: JSON.stringify({
+        like: false
+      })
+    })
+    .then(response => response.json())
+    .then(result => {
+
+      var likes = result["likes"];
+      var button = document.querySelector(`#change_l${id}`);
+      button.style.background = "white";
+      new_num_likes.innerHTML = likes;
+
+    })
+    .catch(err => console.log(err));
+
+    setTimeout(function(){
+      load_posts();
+    },250);
+
+  }
+  //Archive
+  else if(flag == 0){
+    fetch(`/manage_likes/${id}`,{
+      method: 'PUT',
+      body: JSON.stringify({
+        like: true
+      })
+    })
+    .then(response => response.json())
+    .then(result => {
+
+      var likes = result["likes"];
+      new_num_likes.innerHTML = likes;
+      var button = document.querySelector(`#change_d${id}`);
+      button.style.background = "red";
+
+    })
+    .catch(err => console.log(err));
+
+    setTimeout(function(){
+      load_posts();
+    },250);
+
+  }
+
+
+
+}
 
 
 function edit_post(id) {
@@ -58,6 +137,7 @@ function send_edit_post(id){
 
 
 }
+
 
 
 function load_posts(){

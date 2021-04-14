@@ -4,6 +4,10 @@
 
 {% block body %}
 
+{% block script %}
+    <script type="text/javascript" src="{% static 'network/posts.js' %}"></script>
+{% endblock %}
+
 
 <h4> Following Posts </h4>
 {% for post in posts%}
@@ -12,8 +16,13 @@
         <p><a href="{% url 'profile' post.user.username %}"><strong>{{ post.user.username }}</strong></a></p>
         <p >{{post.text}}</p>
         <p> <small>{{post.created_at}}</small></p>
-        <img src="{% static 'network/small-heart-icon-0.jpg' %}" width="100" height="60">
-        <div class="image">
+        {% if user in post.user_likes.all %}
+          <button id ="change_l{{post.id}}" class="dislike" value='{{post.id}}'></button>
+        {% else %}
+          <button id="change_d{{post.id}}" class="like" value= '{{post.id}}'></button>
+
+        {% endif %}
+        <div id = "likes{{post.id}}" class="image" >
           {{post.likes}}
         </div>
   </div>

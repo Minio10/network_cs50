@@ -15,7 +15,9 @@ urlpatterns = [
     path("newPost",views.newPost,name = "newPost"),
 
     # API Routes
-    path("edit_posts/<int:id>", views.edit_posts, name="edit_posts")
+    path("edit_posts/<int:id>", views.edit_posts, name="edit_posts"),
+    path("manage_likes/<int:id>", views.manage_likes, name="manage_likes"),
+
 
 
 ]

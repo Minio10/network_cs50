@@ -19,8 +19,13 @@
 
               <p >{{post.text}}</p>
               <p> <small>{{post.created_at}}</small></p>
-              <img src="{% static 'network/small-heart-icon-0.jpg' %}" width="100" height="60">
-              <div class="image">
+              {% if user in post.user_likes.all %}
+                <button id ="change_l{{post.id}}" class="dislike" value='{{post.id}}'></button>
+              {% else %}
+                <button id="change_d{{post.id}}" class="like" value= '{{post.id}}'></button>
+
+              {% endif %}
+              <div id = "likes{{post.id}}" class="image" >
                 {{post.likes}}
               </div>
               {% if user.get_username == post.user.username %}

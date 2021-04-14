@@ -12,7 +12,7 @@ from django.http import JsonResponse
 
 
 
-from .models import User,Post, UserProfile
+from .models import User,Post, UserProfile, Like
 
 class NewPostForm(forms.Form):
 
@@ -26,6 +26,12 @@ class NewPostForm(forms.Form):
 def index(request):
     all_posts = Post.objects.all() #- means that its desceding order newer to older
     all_posts = all_posts.order_by('-created_at')
+
+    #Takes care ot the likes
+    for post in all_posts:
+        post.likes = post.user_likes.count()
+
+
 
     page = request.GET.get('page', 1)
 
@@ -284,3 +290,24 @@ def edit_posts(request,id):
         post.text = body
         post.save()
         return HttpResponse(status=204)
+
+@csrf_exempt
+def manage_likes(request,id):
+
+    # Query for requested post
+    try:
+        post = Post.objects.get(pk=id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
+
+    if request.method == "PUT":
+        data = json.loads(request.body)
+        if data.get("like") == False:
+            post.user_likes.remove(request.user)
+
+        elif data.get("like") == True:
+            post.user_likes.add(request.user)
+        post.likes = post.user_likes.count()
+        post.save()
+
+        return JsonResponse({'likes':post.likes})
