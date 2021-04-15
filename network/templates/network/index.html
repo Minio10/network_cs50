@@ -17,12 +17,13 @@
         <div class="container"
               <p><a href="{% url 'profile' post.user.username %}"><strong>{{ post.user.username }}</strong></a></p>
 
-              <p >{{post.text}}</p>
+              <p>{{post.text}}</p>
               <p> <small>{{post.created_at}}</small></p>
-              {% if user in post.user_likes.all %}
-                <button id ="change_l{{post.id}}" class="dislike" value='{{post.id}}'></button>
+              {% if request.user in post.user_likes.all %}
+                <button id ="change_l{{post.id}}" class="dislike" onclick = "manage_likes('{{ post.id }}','change_l')"></button>
               {% else %}
-                <button id="change_d{{post.id}}" class="like" value= '{{post.id}}'></button>
+                <button id="change_d{{post.id}}" class="like" onclick = "manage_likes('{{ post.id }}','change_d')"></button>
+
 
               {% endif %}
               <div id = "likes{{post.id}}" class="image" >
