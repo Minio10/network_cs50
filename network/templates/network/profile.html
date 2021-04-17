@@ -44,7 +44,7 @@
 
     <div class="container"
           <p ><strong>{{post.user.username}}</strong> </p>
-          <p >{{post.text}}</p>
+          <p id = "edit_p{{post.id}}" >{{post.text}}</p>
           <p> <small>{{post.created_at}}</small></p>
           {% if user in post.user_likes.all %}
             <button id ="change_l{{post.id}}" class="dislike" value='{{post.id}}'></button>
@@ -56,7 +56,7 @@
             {{post.likes}}
           </div>
           {% if user.get_username == post.user.username %}
-            <button class="edit" value = '{{post.id}}'> <img src="{% static 'network/edit.png' %}" width="30" height="30" >Edit Post</button>
+            <button class="edit" onclick = "send_edit_post('{{ post.id }}')"> <img src="{% static 'network/edit.png' %}" width="30" height="30" >Edit Post</button>
           {% endif %}
     </div>
 
@@ -78,8 +78,8 @@
   <div id="edit_post">
       <h3>Edit Post</h3>
       <form id="compose-form">
-          <textarea class="form-control" id="compose-body" placeholder="Body"></textarea>
-          <input type="submit" class="btn btn-primary" value="Save"/>
+          <textarea class="form-control" id="compose-body"></textarea>
+          <button id ="send" value="Save" </button>
       </form>
   </div>
 
