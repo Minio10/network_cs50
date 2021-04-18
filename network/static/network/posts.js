@@ -17,7 +17,9 @@ function manage_likes(id, label){
   }
 
   var new_num_likes = document.querySelector(`#likes${id}`);
-  //Unarchive
+
+  //Disliking
+
   if(window.getComputedStyle(button, null).getPropertyValue("background-color") === "rgb(255, 0, 0)"){
     fetch(`/manage_likes/${id}`,{
       method: 'PUT',
@@ -38,12 +40,10 @@ function manage_likes(id, label){
     })
     .catch(err => console.log(err));
 
-    setTimeout(function(){
-      load_posts();
-    },250);
 
   }
-  //Archive
+  //Liking
+
   else if(window.getComputedStyle(button, null).getPropertyValue("background-color") === "rgb(255, 255, 255)"){
     fetch(`/manage_likes/${id}`,{
       method: 'PUT',
@@ -62,15 +62,7 @@ function manage_likes(id, label){
     })
     .catch(err => console.log(err));
 
-    setTimeout(function(){
-      load_posts();
-    },250);
-
   }
-
-
-
-
 
 }
 
@@ -82,6 +74,9 @@ function send_edit_post(id){
   //button of edit post
   var button = document.querySelector('#send');
 
+  console.log(id);
+
+
 
   // Show compose view and hide other views
   document.querySelector('#all_posts').style.display = 'none';
@@ -90,7 +85,10 @@ function send_edit_post(id){
   // Clear out composition fields
   document.querySelector('#compose-body').value = '';
 
-  send.addEventListener('click',() => {
+  button.onclick = function(){
+
+
+
     fetch(`/edit_posts/${id}`,{
       method: 'PUT',
       body: JSON.stringify({
@@ -100,19 +98,13 @@ function send_edit_post(id){
     })
     var paragraph = document.querySelector(`#edit_p${id}`);
     paragraph.innerHTML = document.querySelector('#compose-body').value;
-    console.log(paragraph.innerHTML);
 
-    // Show compose view and hide other views
+    // Show all posts and hide edit div
     document.querySelector('#all_posts').style.display = 'block';
     document.querySelector('#edit_post').style.display = 'none';
 
-    // event.preventDefault();
 
-
-
-
-    return false;
-  });
+  };
 
 
 }
